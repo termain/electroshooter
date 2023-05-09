@@ -8,9 +8,23 @@ cc.bullet_charge_time = 2.0
 cc.bullet_charge_rate = (cc.max_bullet_velocity-cc.min_bullet_velocity)/
                          cc.bullet_charge_time
 cc.max_player_charge = 10.0
+
+--love2d version specific constants
+cc.version = {}
+cc.version.major, cc.version.minor, cc.version.revision = love.getVersion()
 cc.cs = 1.0/255.0
 cc.left_mouse_button = 1
 cc.right_mouse_button = 2
+
+if cc.version.major < 11 then
+    cc.cs = 1.0
+end
+
+if cc.version.major == 0 and cc.version.minor < 10 then
+    cc.left_mouse_button = 'l'
+    cc.right_mouse_button = 'r'
+end
+
 
 go.bullets = {}
 go.enemies = {}
