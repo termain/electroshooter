@@ -8,9 +8,16 @@ cc.bullet_charge_time = 2.0
 cc.bullet_charge_rate = (cc.max_bullet_velocity-cc.min_bullet_velocity)/
                          cc.bullet_charge_time
 cc.max_player_charge = 10.0
+cc.cs = 1.0/255.0
+cc.left_mouse_button = 1
+cc.right_mouse_button = 2
 
 go.bullets = {}
 go.enemies = {}
+
+function normalize_color( color )
+	return { cc.cs*color[1],cc.cs*color[2],cc.cs*color[3] }
+end
 
 function nothing()
 end
@@ -36,7 +43,7 @@ function create_regular_enemy( name, xx, charge )
     enemy.hitbox    = {36, 36}
     enemy.on_hit    = deactivate_enemy
     enemy.linewidth = 1
-    enemy.color     = {192,192,192}
+    enemy.color     = normalize_color( {192,192,192} )
     return enemy
 end
 
@@ -44,15 +51,15 @@ function create_shield_enemy( name, xx, charge )
     local enemy = create_regular_enemy( name, xx, charge )
     enemy.on_hit = nothing
     enemy.hitbox = {36,72}
-    enemy.color     = {255,215,0}
+    enemy.color     = normalize_color( {255,215,0} )
     return enemy
 end
 
 function create_half_shield_enemy( name, xx )
     local enemy = create_shield_enemy( name, xx, 0 )
     enemy.on_hit = half_shield_hit
-    enemy.front_color = {255,215,0}
-    enemy.color = {192,192,192}
+    enemy.front_color = normalize_color( {255,215,0} )
+    enemy.color = normalize_color( {192,192,192} )
     enemy.draw = draw_half_shield_enemy
     enemy.charge = 0
     return enemy
@@ -370,7 +377,7 @@ function draw_field( field )
             else
                 red = field_strength
             end
-            love.graphics.setColor( math.min(red,240), 0, math.min(blue,240) )
+            love.graphics.setColor( normalize_color({ math.min(red,240), 0, math.min(blue,240)}) )
             --love.graphics.circle( "fill",wloc,hloc, 5 )
             love.graphics.rectangle("fill",wloc-5,hloc-5,10,10)
         end
@@ -378,7 +385,7 @@ function draw_field( field )
 end
 
 function draw_charge_beam( player )
-    local beam_color = {0,255,0}
+    local beam_color = normalize_color({0,255,0})
     if( player.beam_state ~= 0 ) then
         beam_color = charge_to_color(player.loaded_bullet_charge)
     end
@@ -443,11 +450,11 @@ function potential_field_update( objects )
 end
 
 function love.mousepressed(x, y, button, istouch)
-    if button == 'l' then
+    if button == cc.left_mouse_button then
         field_text_location[1] = x
         field_text_location[2] = y
     end
-    if button == 'r' and go.player.is_cooled_down then
+    if button == cc.right_mouse_button and go.player.is_cooled_down then
         activate_bullet( go.bullets[go.player.loaded_bullet_index],
                             {x,y},{0,0.0},
                             go.player.loaded_bullet_charge )
